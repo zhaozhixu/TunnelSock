@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include "socklib.h"
+#include "protocol.h"
 #include "util.h"
 
 #define DEFAULT_PORT 2222
@@ -10,6 +11,9 @@ static int sfd = -1, cfd = -1;
 static int newsfd = -1, newcfd = -1;
 static pid_t worker_ids[MAXWORKER];
 static int ismaster;
+
+extern char REQ_NEW_CLIENT[];
+extern char REQ_CLOSE_FD[];
 
 static void usage(void)
 {
@@ -118,6 +122,28 @@ static void init() {
      set_signal(SIGCHLD);
 }
 
+static void process_newcfd(int cfd, int newcfd)
+{
+     char buf[BUFSIZ];
+     size_t n;
+
+     write(cfd, REQ_NEW_CLIENT, strlen(REQ_NEW_CLIENT));
+     n = read(cfd, buf, sizeof(buf));
+
+     if (is_server_ready(buf, strlen(buf))) {
+          set_nonblock(cfd);
+          set_nonblock(newcfd);
+
+          protocol_talk(newcfd, cfd);
+          fprintf(stderr, "done accept\n");
+          set_block(cfd);
+     }
+     if (is_server_fail(buf, strlen(buf))) {
+          fprintf(stderr, "remote server fail\n");
+          exit(EXIT_FAILURE);
+     }
+}
+
 static void process_rq(int cfd)
 {
      pid_t worker_id;
@@ -155,18 +181,23 @@ static void process_rq(int cfd)
      while (1) {                /* should make parallel */
           newcfd = accept(newsfd, NULL, NULL);
           fprintf(stderr, "accept a request\n");
-          write(cfd, new_req_flag, strlen(new_req_flag)+1);
-          n = read(cfd, buf, sizeof(buf));
+          /* write(cfd, new_req_flag, strlen(new_req_flag)+1); */
+          /* write(cfd, REQ_NEW_CLIENT, strlen(REQ_NEW_CLIENT)); */
+          /* n = read(cfd, buf, sizeof(buf)); */
 
-          if (strncmp(buf, "ready", n) == 0) {
-               set_nonblock(cfd);
-               set_nonblock(newcfd);
+          /* if (is_server_ready(buf, strlen(buf))) { */
+          /*      set_nonblock(cfd); */
+          /*      set_nonblock(newcfd); */
 
-               socket_talk(cfd, newcfd);
-               fprintf(stderr, "done accept\n");
-               set_block(cfd);
-          }
-          close(newcfd);
+          /*      protocol_talk(newcfd, cfd); */
+          /*      fprintf(stderr, "done accept\n"); */
+          /*      set_block(cfd); */
+          /* } */
+          /* if (is_server_fail(buf, strlen(buf))) { */
+          /*      fprintf(stderr, "remote server fail\n"); */
+          /*      exit(EXIT_FAILURE); */
+          /* } */
+          close(newcfd);        /* shutdown? */
      }
 }
 

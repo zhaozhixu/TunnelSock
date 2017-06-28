@@ -1,7 +1,11 @@
 #include "socklib.h"
 #include "util.h"
+#include "protocol.h"
 
 #define DEFAULT_PORT 2222
+
+extern char ACK_SERVER_READY[];
+extern char ACK_SERVER_FAIL[];
 
 static void usage(void)
 {
@@ -36,25 +40,27 @@ int main(int argc, char *argv[])
           fprintf(stderr, "server cannot bind\n");
           exit(EXIT_FAILURE);
      }
+     fprintf(stderr, "bind success\n");
 
      while(1) {                 /* should make parallel */
           n = read(sfd, buf, sizeof(buf));
           fprintf(stderr, "got a request: %s %d\n", buf, n);
 
-          if (strncmp(buf, "new request", n) == 0) {
+          if (is_new_client(buf, n)) {
                fprintf(stderr, "connect webserver\n");
                if ((lsfd = connect_to_server(hostl, atoi(portl)))
                    == -1) {
                     perror("connect hostl");
-                    write(sfd, new_ack_fail, strlen(new_ack_fail)+1);
+                    write(sfd, ACK_SERVER_FAIL,
+                          strlen(ACK_SERVER_FAIL));
                     exit(EXIT_FAILURE);
                }
-               write(sfd, new_ack_ready, strlen(new_ack_ready)+1);
+               write(sfd, ACK_SERVER_READY, strlen(ACK_SERVER_READY));
                set_nonblock(sfd);
                set_nonblock(lsfd);
 
-               socket_talk(sfd, lsfd);
-               close(lsfd);
+               protocol_talk(lsfd, sfd);
+               close(lsfd);     /* shutdown? */
                fprintf(stderr, "done webserver\n");
                set_block(sfd);
           }

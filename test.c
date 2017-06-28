@@ -1,29 +1,48 @@
 #include "socklib.h"
+#include "protocol.h"
+
+extern char REQ_NEW_CLIENT[];
+extern char REQ_CLOSE_FD[];
+extern char REQ_NEW_FORWARD[];
+extern char ACK_SERVER_READY[];
+extern char ACK_SERVER_FAIL[];
+
+static int digit_num(int n)
+{
+     int i;
+     for (i = 1; n / 10; i++)
+          n /= 10;
+     return i;
+}
+
+void test_pack(void)
+{
+     char data[] = "Hello, world!\n";
+     char *packed;
+     char *unpacked;
+     size_t n;
+
+     printf("data length: %ld\n", sizeof(data));
+
+     n = pack_data(data, sizeof(data), &packed);
+     printf("%s", packed);
+     printf("packed length: %ld\n", n);
+
+     n = unpack_data(packed, &unpacked);
+     printf("%s", unpacked);
+     printf("unpacked length: %ld\n", n);
+}
+
+void test_req_ack(void)
+{
+     printf("NEW CLIENT: %d\n", is_new_client(REQ_NEW_CLIENT, strlen(REQ_NEW_CLIENT)));
+     printf("CLOSE FD: %d\n", is_close_fd(REQ_CLOSE_FD, strlen(REQ_CLOSE_FD)));
+     printf("SERVER FAIL: %d\n", is_server_fail(ACK_SERVER_FAIL, strlen(ACK_SERVER_FAIL)));
+     printf("SERVER READY: %d\n", is_server_ready(ACK_SERVER_READY, strlen(ACK_SERVER_READY)));
+}
 
 int main(int argc, char *argv[])
 {
-     /* char req[] = "GET / HTTP/1.1\r\n\ */
-/* Host: localhost:80\r\n\ */
-/* User-Agent: curl/7.47.0\r\n\ */
-/* Accept: *\/\*\r\n\r\n"; */
-/*      int fd = connect_to_server(argv[1], atoi(argv[2])); */
-/*      write(fd, req, strlen(req)); */
-/*      char buf[BUFSIZ]; */
-/*      int n, i = 0; */
-/*      /\* while ((n = read(fd, buf, sizeof(buf))) > 0) { *\/ */
-/*      n = read(fd, buf, sizeof(buf)); */
-/*      write(1, buf, n); */
-/*      printf("%d %d\n", n, ++i); */
-/*      write(fd, req, strlen(req)); */
-/*      n = read(fd, buf, sizeof(buf)); */
-/*      /\* while ((n = read(fd, buf, sizeof(buf))) > 0) { *\/ */
-/*      write(1, buf, n); */
-/*      printf("%d %d\n", n, ++i) */;
-     /* printf("%s", buf); */
-     int n;
-     char buf[BUFSIZ];
-     close(0);
-     n = read(0, buf, sizeof(buf));
-     printf("%d\n", n);
-     exit(0);
+     /* test_pack(); */
+     test_req_ack();
 }
