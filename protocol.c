@@ -12,7 +12,7 @@ static char REQ_DATA_FMT[] =
      "Req: DATA\r\n"
      "Length: %d\r\n\r\n";
 
-static int digit_num(size_t n)
+int digit_num(size_t n)
 {
      int i;
      for (i = 1; n / 10; i++)
@@ -22,22 +22,27 @@ static int digit_num(size_t n)
 
 int is_new_client(char *buf, size_t n)
 {
-     return strncmp(buf, REQ_NEW_CLIENT, n) == 0;
+     return n > 0 ? strncmp(buf, REQ_NEW_CLIENT, n) == 0 : 0;
+}
+
+int is_new_forward(char *buf, size_t n)
+{
+     return n > 0 ? strncmp(buf, REQ_NEW_FORWARD, n) == 0 : 0;
 }
 
 int is_close_fd(char *buf, size_t n)
 {
-     return strncmp(buf, REQ_CLOSE_FD, n) == 0;
+     return n > 0 ? strncmp(buf, REQ_CLOSE_FD, n) == 0 : 0;
 }
 
 int is_server_ready(char *buf, size_t n)
 {
-     return strncmp(buf, ACK_SERVER_READY, n) == 0;
+     return n > 0 ? strncmp(buf, ACK_SERVER_READY, n) == 0 : 0;
 }
 
 int is_server_fail(char *buf, size_t n)
 {
-     return strncmp(buf, ACK_SERVER_FAIL, n) == 0;
+     return n > 0 ? strncmp(buf, ACK_SERVER_FAIL, n) == 0 : 0;
 }
 
 size_t pack_data(char *s, size_t n, char **t)

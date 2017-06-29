@@ -23,7 +23,7 @@ else ifeq ($(TG), 2)
 TARGET = CUTest
 TESTCASEO = CUTestCases.o
 TESTCASEH = CUTestCases.h
-LINK += /usr/local/lib/libcunit.a
+LINK += /usr/local/lib/libcunit.a -lgcov
 endif
 
 $(TARGET): $(TARGET).o util.o socklib.o protocol.o $(TESTCASEO)

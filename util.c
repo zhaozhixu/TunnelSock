@@ -12,6 +12,14 @@ void parse_hostport(char *hostport, char **hostp, char **portp)
      size_t n;
 
      n = strcspn(hostport, ":");
+     if (n == strlen(hostport)) {
+          *hostp = (char *)malloc(2);
+          *portp = (char *)malloc(2);
+          strcpy(*hostp, "");
+          strcpy(*portp, "");
+          return;
+     }
+
      *hostp = (char *)malloc(n + 1);
      strncpy(*hostp, hostport, n);
      (*hostp)[n] = '\0';

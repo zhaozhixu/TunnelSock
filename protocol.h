@@ -7,7 +7,9 @@
 #include <sys/select.h>
 #include <sys/socket.h>
 
+int digit_num(size_t n);
 int is_new_client(char *buf, size_t n);
+int is_new_forward(char *buf, size_t n);
 int is_close_fd(char *buf, size_t n);
 int is_server_ready(char *buf, size_t n);
 int is_server_fail(char *buf, size_t n);
