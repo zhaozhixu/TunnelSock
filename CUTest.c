@@ -13,13 +13,14 @@ int main(int argc, char *argv[])
      setvbuf(stdout, NULL, _IONBF, 0);
      CU_set_error_action(CUEA_IGNORE);
 
-     if (CU_initialize_registry())
-          printf("Initialization of Test Registry failed.");
-     else {
-          AddTests();
-          CU_set_output_filename("TestAutomated");
-          CU_list_tests_to_file();
-          CU_automated_run_tests();
-          CU_cleanup_registry();
-     }
+     CU_initialize_registry();
+     /* if (CU_initialize_registry()) */
+     /*      printf("Initialization of Test Registry failed."); */
+     /* else { */
+     AddTests();
+     CU_set_output_filename("TestAutomated");
+     CU_list_tests_to_file();
+     CU_automated_run_tests();
+     CU_cleanup_registry();
+     /* } */
 }

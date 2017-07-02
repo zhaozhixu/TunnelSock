@@ -62,7 +62,7 @@ size_t pack_data(char *s, size_t n, char **t)
      return h_length + n;
 }
 
-size_t unpack_data(char *s, char **t)
+ssize_t unpack_data(char *s, char **t)
 {
      char req[TMP_BUFSIZ], req_arg[TMP_BUFSIZ];
      char length[TMP_BUFSIZ], length_arg[TMP_BUFSIZ];
@@ -94,10 +94,11 @@ size_t unpack_data(char *s, char **t)
 
 void protocol_talk(int fd_raw, int fd_pack)
 {
-     int maxfdp1, n;
+     int maxfdp1;
      char buf[BUFSIZ];
      char *buf_pack, *buf_raw;
      fd_set fds;
+     ssize_t n;
 
      maxfdp1 = 1 + (fd_raw > fd_pack ? fd_raw : fd_pack);
      FD_ZERO(&fds);

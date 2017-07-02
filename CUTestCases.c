@@ -56,10 +56,25 @@ static void test_parse_hostport(void)
 
 static void test_digit_num(void)
 {
+     int bit, width;
+     size_t integer;
+
      CU_ASSERT_EQUAL(digit_num(0), 1);
      CU_ASSERT_EQUAL(digit_num(1), 1);
      CU_ASSERT_EQUAL(digit_num(20), 2);
-     CU_ASSERT_EQUAL(digit_num(9999), 4);
+
+     bit = sizeof(int*) * 8;
+     if (bit == 32) {
+          integer = 0xFFFFFFFF;
+          width = 10;
+     }
+     else {
+          integer = 0xFFFFFFFFFFFFFFFF;
+          width = 20;
+     }
+     CU_ASSERT_EQUAL(digit_num(integer), width);
+     CU_ASSERT_EQUAL(digit_num(integer-1), width);
+     /* printf("%lu->%d\n", integer, digit_num(integer)); */
 }
 
 static void test_is_new_client(void)
@@ -152,7 +167,7 @@ static void test_is_server_fail(void)
      char ack_server_fail[] = "Ack: SERVER FAIL\r\n\r\n";
      char ack_server_ready[] = "Ack: SERVER READY\r\n\r\n";
      char req_new_forward[] = "Req: NEW FORWARD\r\n\r\n";
-     char ack_wrong_newline[] = "Ack: SERVER READY\n\n";
+     char ack_wrong_newline[] = "Ack: SERVER FAIL\n\n";
      char nonsense[] = "nonsense";
      char empty[] = "";
 
@@ -179,9 +194,10 @@ static void test_pack_unpack_data(void)
      char empty[] = "";
      char packed_empty[] = "Req: DATA\r\n"
           "Length: 1\r\n\r\n";
+     char wrong_format[] = "Req: NEW CLIENT\r\n\r\n";
      char *packed, *unpacked;
      char buf[BUFSIZ];
-     size_t n, fn;
+     ssize_t n, fn;
      int fd;
 
      n = pack_data(raw_string, strlen(raw_string)+1, &packed);
@@ -210,6 +226,11 @@ static void test_pack_unpack_data(void)
      close(fd);
      free(packed);
      free(unpacked);
+
+     n = unpack_data(wrong_format, &unpacked);
+     CU_ASSERT_EQUAL(n, -1);
+     n = unpack_data(empty, &unpacked);
+     CU_ASSERT_EQUAL(n, -1);
 }
 
 static CU_TestInfo tests_util[] = {
@@ -240,14 +261,15 @@ void AddTests(void)
      assert(!CU_is_test_running());
 
      /* Register suites. */
-     if (CU_register_suites(suites) != CUE_SUCCESS) {
-          fprintf(stderr, "suite registration failed - %s\n",
-                  CU_get_error_msg());
-          exit(EXIT_FAILURE);
-     }
+     CU_register_suites(suites);
+     /* if (CU_register_suites(suites) != CUE_SUCCESS) { */
+     /*      fprintf(stderr, "suite registration failed - %s\n", */
+     /*              CU_get_error_msg()); */
+     /*      exit(EXIT_FAILURE); */
+     /* } */
 }
 
-void print_example_results(void)
-{
-     fprintf(stdout, "Results\n");
-}
+/* void print_example_results(void) */
+/* { */
+/*      fprintf(stdout, "Results\n"); */
+/* } */

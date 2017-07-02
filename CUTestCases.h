@@ -1,2 +1,2 @@
 void AddTests(void);
-void print_example_results(void);
+/* void print_example_results(void); */

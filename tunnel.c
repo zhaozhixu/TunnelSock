@@ -48,8 +48,7 @@ int main(int argc, char *argv[])
 
           if (is_new_client(buf, n)) {
                fprintf(stderr, "connect webserver\n");
-               if ((lsfd = connect_to_server(hostl, atoi(portl)))
-                   == -1) {
+               if ((lsfd = connect_to_server(hostl, atoi(portl))) == -1) {
                     perror("connect hostl");
                     write(sfd, ACK_SERVER_FAIL,
                           strlen(ACK_SERVER_FAIL));

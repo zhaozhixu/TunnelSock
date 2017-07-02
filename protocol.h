@@ -14,5 +14,5 @@ int is_close_fd(char *buf, size_t n);
 int is_server_ready(char *buf, size_t n);
 int is_server_fail(char *buf, size_t n);
 size_t pack_data(char *s, size_t n, char **t);
-size_t unpack_data(char *s, char **t);
+ssize_t unpack_data(char *s, char **t);
 void protocol_talk(int fd_raw, int fd_pack);

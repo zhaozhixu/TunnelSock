@@ -9,7 +9,7 @@ LINK =
 
 # release: make DEBUG=0
 ifeq ($(DEBUG),1)
-CFS += -g -DDEBUG -fprofile-arcs -ftest-coverage
+CFS += -g -DDEBUG -fprofile-arcs -ftest-coverage -O0
 else
 CFS += -O3
 endif

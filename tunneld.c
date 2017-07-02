@@ -181,6 +181,7 @@ static void process_rq(int cfd)
      while (1) {                /* should make parallel */
           newcfd = accept(newsfd, NULL, NULL);
           fprintf(stderr, "accept a request\n");
+          process_newcfd(cfd, newcfd);
           /* write(cfd, new_req_flag, strlen(new_req_flag)+1); */
           /* write(cfd, REQ_NEW_CLIENT, strlen(REQ_NEW_CLIENT)); */
           /* n = read(cfd, buf, sizeof(buf)); */
@@ -197,7 +198,7 @@ static void process_rq(int cfd)
           /*      fprintf(stderr, "remote server fail\n"); */
           /*      exit(EXIT_FAILURE); */
           /* } */
-          close(newcfd);        /* shutdown? */
+          /* close(newcfd);        /\* shutdown? *\/ */
      }
 }
 
