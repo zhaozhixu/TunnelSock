@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
                usage();
           switch (argv[1][1]) {
           case 'p':
-               port = atoi(argv[1] + 3);
+               port = atoi(argv[1] + 2);
                break;
           default:
                break;
